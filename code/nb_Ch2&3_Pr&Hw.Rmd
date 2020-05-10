@@ -1,0 +1,183 @@
+---
+title: "Chapter 2&3 Practice and homeworks"
+output:
+  html_document:
+    df_print: paged
+---
+***
+The layout for the following notebooks will first go through the book chapter's practice section and then tackle the homeworks provided online. In between, I might copy code sections from the book to facilitate the practical aspects associated to the learning and application of the methods of interest.
+
+*Disclaimer: The answers provided here are not only mine and are not necessarily correct* 
+
+See Sources here containing some of the copied answers in this notebook: 
+
+- [Source 1](https://rpubs.com/andersgs/my_solutions_chapter2_statrethink)
+- [Source 2](http://rstudio-pubs-static.s3.amazonaws.com/326789_e280ba45916a400f9556212409406da2.html)
+    
+### Practice 2.6.
+
+##### **Easy:**
+
+* **2E1.** The expressions that correspond to the "The probability of rain on Monday" are: Pr(rain|Monday) and Pr(rain,Monday) / Pr(Monday) --
+
+* **2E2.** The probability that it is Monday given that it is raining corresponds to the expression Pr(Monday|Rain)
+
+* **2E3.** Pr(Monday|Rain) and Pr(rain|Monday) * Pr(Monday) / Pr(rain) [according to Bayes rule] corresponds to the statement: "The probability that it is Monday given that it is raining"
+
+* **2E4.** With regards to the global tossing example from the chapter, saying that "the probability of water is 0.7 " implies that given our limited knowledge and based on the outcomes of the experiment, our best guess of the true proportion of water in the globe is 0.7. --
+
+***
+
+##### **Medium:**
+
+> Recalling the global tossing model from chapter 2
+
+```{r echo=FALSE}
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=20 )
+
+# define prior
+prior <- rep( 1 , 20 )
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( 6 , size=9 , prob=p_grid 
+                      )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+# Plot
+plot( p_grid , posterior , type="b" ,
+xlab="probability of water" , ylab="posterior probability" )
+mtext( "20 points" )
+
+```
+
+***
+
+* **2M1.& 2M2**
+
+
+    + In case the set of observation was: (1) W, W, W
+```{r echo=FALSE}
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=20 )
+
+# define prior
+prior <- rep( 1 , 20 )
+prior <- ifelse(p_grid < 0.5, 0, 1)
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( 3 , size=3 , prob=p_grid 
+                      )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+# Plot
+plot( p_grid , posterior , type="b" ,
+xlab="probability of water" , ylab="posterior probability" )
+mtext( "1-W, W, W (20 points)" )
+
+```
+
+     + In case the set of observation was: (2) W, W, W, L
+```{r echo=FALSE}
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=20 )
+
+# define prior
+prior <- rep( 1 , 20 )
+prior <- ifelse(p_grid < 0.5, 0, 1)
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( 3 , size=4 , prob=p_grid 
+                      )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+# Plot
+plot( p_grid , posterior , type="b" ,
+xlab="probability of water" , ylab="posterior probability" )
+mtext( "2-W, W, W, L (20 points)" )
+
+```
+
+    + In case the set of observation was: (3) L, W, W, L, W, W, W
+```{r echo=FALSE}
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=20 )
+
+# define prior
+prior <- rep( 1 , 20 )
+prior <- ifelse(p_grid < 0.5, 0, 1) 
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( 5 , size=7 , prob=p_grid 
+                      )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+# Plot
+plot( p_grid , posterior , type="b" ,
+xlab="probability of water" , ylab="posterior probability" )
+mtext( "3-L, W, W, L, W, W, W (20 points)" )
+
+```
+
+* **2M3** --
+```{r echo=TRUE}
+p_E = 1/2 # probability that globe is Earth
+p_M = 1/2 # probability that globe is Mars
+
+p_land_E = 0.3 # probability land given Earth p(land|Earth)
+p_land_M = 1.0 # probability land given Mars p(land|Mars)
+
+p_land = p_land_E*p_E + p_land_M*p_M # probability of land 
+
+# What is p(Earth|land) ?
+## p(Earth|land) = (p(land|Earth) * p(Earth)) / p(land)
+p_earth_L = (p_land_E * p_E)/p_land
+p_earth_L
+
+```
+
+* **2M4** 
+Card1: B/B Card2: B/W Card3: W/W
+
+If we observed one black side up, there are 2 ways of producing the black side up if we pick the B/B card and one way if we pick the B/W card, so in total, 2 of 3 ways are consistent with the other side of the card being black. The answer is 2/3.
+
+* **2M5** 
+With an extra B/B card:
+
+If we observe one black side up, there are 4 ways of producing the black side up (2 for each B/B card) and 1 for picking the B/W card. The total probability that the other side is black is thus: 4/5
+
+* **2M6** 
+Card1: B/B Card2: B/W Card3: W/W
+
+Black sides are heavier than cards with white sides so it is less likely that a card with black sides is pulled from the bag.
+
+There are still 2 ways for B/B to produce a black side up, 1 way for B/W and zero ways for W/W. But according to the prior information, there is 1 way to get the B/B card, 2 ways to get the B/W card and 3 ways to get the W/W card so:
+
+The total ways for the B/B card to produce a black side up are 2 * 1 and the total ways for the B/W card to produce a black side up are 1 * 2.
+
+So, there are 4 ways total to see a black side up and 2 of these come from the B/B card hence the probability that the other side is black is now at 0.5 
+
+* **2M7**  --
+Card1: B/B Card2: B/W Card3: W/W
+
+The B/B card has 2 ways to produce an observation with the black side up. This leaves the B/W and the W/W card with the job of producing the next observation. The B/W has only 1 way to produce a white side up while the W/W has 2 ways. So there are 3 ways to get the second card to show the white side up. Assuming the first card is B/B, there are 6 ways to see the BW sequence.
+
+If however the B/W card is drawn first, there is 1 way for it to show the black side up. This leaves the other two cards to show the white side up. The B/B can’t show white while W/W has 2 ways to show white up so that is 2 ways to see the sequence Black and White when the first card drawn is B/W.
+
+The probability is thus: 8 total ways of producing the sequence BW with 6 ways with B/B being drawn first.
